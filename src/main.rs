@@ -5,6 +5,7 @@ mod consts;
 mod errors;
 mod utils;
 
+use crate::consts::SINGLE_INSTANCE_NAME;
 use crate::errors::{
     ErrAlreadyInstalled, ErrAlreadyRunning, ErrCurrentlyUninstalled, ErrNoExePathname,
 };
@@ -20,7 +21,7 @@ use std::path::PathBuf;
 use std::process::Command;
 
 fn main() -> Result<()> {
-    let instance = SingleInstance::new(CARGO_PKG_NAME)?;
+    let instance = SingleInstance::new(SINGLE_INSTANCE_NAME)?;
 
     if !instance.is_single() {
         return Err(ErrAlreadyRunning.into());
