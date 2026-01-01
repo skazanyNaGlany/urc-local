@@ -21,14 +21,9 @@ use std::path::PathBuf;
 use std::process::Command;
 
 fn main() -> Result<()> {
-    let instance = SingleInstance::new(SINGLE_INSTANCE_NAME)?;
-
-    if !instance.is_single() {
-        return Err(ErrAlreadyRunning.into());
-    }
-
     let mut cmd_args = CmdArgs::parse();
 
+    assert_single_instance(&cmd_args)?;
     set_working_dir_as_exe()?;
     resolve_paths(&mut cmd_args)?;
 
@@ -40,6 +35,20 @@ fn main() -> Result<()> {
         install(&cmd_args)?;
     } else if cmd_args.uninstall {
         uninstall(&cmd_args)?;
+    }
+
+    return Ok(());
+}
+
+fn assert_single_instance(cmd_args: &CmdArgs) -> Result<()> {
+    if !cmd_args.single_instance {
+        return Ok(());
+    }
+
+    let instance = SingleInstance::new(SINGLE_INSTANCE_NAME)?;
+
+    if !instance.is_single() {
+        return Err(ErrAlreadyRunning.into());
     }
 
     return Ok(());

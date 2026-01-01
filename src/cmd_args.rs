@@ -24,4 +24,7 @@ pub(crate) struct CmdArgs {
 
     #[arg(short, long, help = "Run the RC file")]
     pub(crate) run: bool,
+
+    #[arg(short = 'o', long, help = "Allow only one app instance")]
+    pub(crate) single_instance: bool,
 }
