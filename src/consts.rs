@@ -11,7 +11,7 @@ pub(crate) const CARGO_PKG_VERSION: &str = env!("CARGO_PKG_VERSION");
 
 pub(crate) const EXT_HELP_MSG: &str = formatcp!(
     "Universal {rc_file_name} runner.\n
-You can use this app to run file {rc_file_name} automatically at system startup.",
+You can use this app to run {rc_file_name} file automatically at system startup.",
     rc_file_name = RC_FILE_NAME
 );
 
