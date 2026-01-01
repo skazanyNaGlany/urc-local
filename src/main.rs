@@ -24,7 +24,7 @@ fn main() -> Result<()> {
     let mut cmd_args = CmdArgs::parse();
 
     assert_single_instance(&cmd_args)?;
-    set_working_dir_as_exe()?;
+    set_working_dir_as_exe(&cmd_args)?;
     resolve_paths(&mut cmd_args)?;
 
     if cmd_args.status {
@@ -63,7 +63,9 @@ fn install(cmd_args: &CmdArgs) -> Result<()> {
 
     auto_launch.enable()?;
 
-    println!("Installed");
+    if !cmd_args.quiet {
+        println!("Installed");
+    }
 
     return Ok(());
 }
@@ -77,31 +79,41 @@ fn uninstall(cmd_args: &CmdArgs) -> Result<()> {
 
     auto_launch.disable()?;
 
-    println!("Uninstalled");
+    if !cmd_args.quiet {
+        println!("Uninstalled");
+    }
 
     return Ok(());
 }
 
 #[cfg(any(target_os = "linux", target_os = "macos"))]
 fn run_rc_file(cmd_args: &CmdArgs) -> Result<()> {
-    println!("Running RC file at {}", cmd_args.file);
+    if !cmd_args.quiet {
+        println!("Running RC file at {}", cmd_args.file);
+    }
 
     let mut process = Command::new("sh").args([&cmd_args.file]).spawn()?;
     let exit_status = process.wait()?;
 
-    println!("Process exit status: {}", exit_status);
+    if !cmd_args.quiet {
+        println!("Process exit status: {}", exit_status);
+    }
 
     return Ok(());
 }
 
 #[cfg(any(target_os = "windows"))]
 fn run_rc_file(cmd_args: &CmdArgs) -> Result<()> {
-    println!("Running RC file at {}", cmd_args.file);
+    if !cmd_args.quiet {
+        println!("Running RC file at {}", cmd_args.file);
+    }
 
     let mut process = Command::new(&cmd_args.file).spawn()?;
     let exit_status = process.wait()?;
 
-    println!("Process exit status: {}", exit_status);
+    if !cmd_args.quiet {
+        println!("Process exit status: {}", exit_status);
+    }
 
     return Ok(());
 }
@@ -125,9 +137,13 @@ fn print_status(cmd_args: &CmdArgs) -> Result<()> {
     let auto_launch = get_auto_launch_instance(cmd_args)?;
 
     if auto_launch.is_enabled()? {
-        println!("App is installed in the startup")
+        if !cmd_args.quiet {
+            println!("App is installed in the startup")
+        }
     } else {
-        println!("App is not installed in the startup")
+        if !cmd_args.quiet {
+            println!("App is not installed in the startup")
+        }
     }
 
     return Ok(());
@@ -140,24 +156,32 @@ fn resolve_paths(cmd_args: &mut CmdArgs) -> Result<()> {
 }
 
 fn resolve_rc_local_path(cmd_args: &mut CmdArgs) -> Result<()> {
-    println!("Getting real path of RC file {}", &cmd_args.file);
+    if !cmd_args.quiet {
+        println!("Getting real path of RC file {}", &cmd_args.file);
+    }
 
     match realpath(&cmd_args.file, RealpathFlags::empty())?.to_str() {
         Some(real_rc_file_pathname) => {
             cmd_args.file = real_rc_file_pathname.to_string();
 
-            println!("RC file real path: {}", cmd_args.file);
+            if !cmd_args.quiet {
+                println!("RC file real path: {}", cmd_args.file);
+            }
         }
         _ => {
-            println!("Cannot get a real path for RC file (is is valid?)")
+            if !cmd_args.quiet {
+                println!("Cannot get a real path for RC file (is is valid?)")
+            }
         }
     }
 
     return Ok(());
 }
 
-fn set_working_dir_as_exe() -> Result<()> {
-    println!("Setting current working directory to the location of the executable");
+fn set_working_dir_as_exe(cmd_args: &CmdArgs) -> Result<()> {
+    if !cmd_args.quiet {
+        println!("Setting current working directory to the location of the executable");
+    }
 
     match PathBuf::from(current_exe()?).as_path().parent() {
         Some(current_exe_path) => {
@@ -166,10 +190,12 @@ fn set_working_dir_as_exe() -> Result<()> {
         _ => {}
     }
 
-    println!(
-        "Current working directory: {}",
-        current_dir()?.to_string_lossy()
-    );
+    if !cmd_args.quiet {
+        println!(
+            "Current working directory: {}",
+            current_dir()?.to_string_lossy()
+        );
+    }
 
     return Ok(());
 }

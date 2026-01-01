@@ -27,4 +27,11 @@ pub(crate) struct CmdArgs {
 
     #[arg(short = 'o', long, help = "Allow only one app instance")]
     pub(crate) single_instance: bool,
+
+    #[arg(
+        short,
+        long,
+        help = "do not output any messages, except errors (RC file can still output some messages)"
+    )]
+    pub(crate) quiet: bool,
 }
