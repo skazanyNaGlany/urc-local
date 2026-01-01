@@ -1,0 +1,27 @@
+use clap::Parser;
+
+use crate::consts::{EXT_HELP_MSG, RC_FILE_NAME};
+
+#[derive(Parser, Debug)]
+#[command(author, version, about, long_about = EXT_HELP_MSG)]
+pub(crate) struct CmdArgs {
+    #[arg(
+        short,
+        long,
+        default_value = RC_FILE_NAME,
+        help = "Use a custom RC file instead of default"
+    )]
+    pub(crate) file: String,
+
+    #[arg(short, long, help = "Check if binary is installed in the startup")]
+    pub(crate) status: bool,
+
+    #[arg(short, long, required = false, help = "Install binary in the startup")]
+    pub(crate) install: bool,
+
+    #[arg(short, long, help = "Uninstall binary from the startup")]
+    pub(crate) uninstall: bool,
+
+    #[arg(short, long, required = false, help = "Run the RC file")]
+    pub(crate) run: bool,
+}
