@@ -25,13 +25,17 @@ pub(crate) struct CmdArgs {
     #[arg(short, long, help = "Run the RC file")]
     pub(crate) run: bool,
 
-    #[arg(short = 'o', long, help = "Allow only one app instance")]
+    #[arg(
+        short = 'o',
+        long,
+        help = "Allow only one app instance (is not used when the application is installed in the startup)"
+    )]
     pub(crate) single_instance: bool,
 
     #[arg(
         short,
         long,
-        help = "do not output any messages, except errors (RC file can still output some messages)"
+        help = "do not output any messages, except errors (RC file can still output some messages, is not used when the application is installed in the startup)"
     )]
     pub(crate) quiet: bool,
 }
