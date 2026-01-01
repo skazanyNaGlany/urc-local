@@ -16,12 +16,12 @@ pub(crate) struct CmdArgs {
     #[arg(short, long, help = "Check if binary is installed in the startup")]
     pub(crate) status: bool,
 
-    #[arg(short, long, required = false, help = "Install binary in the startup")]
+    #[arg(short, long, help = "Install binary in the startup")]
     pub(crate) install: bool,
 
     #[arg(short, long, help = "Uninstall binary from the startup")]
     pub(crate) uninstall: bool,
 
-    #[arg(short, long, required = false, help = "Run the RC file")]
+    #[arg(short, long, help = "Run the RC file")]
     pub(crate) run: bool,
 }
