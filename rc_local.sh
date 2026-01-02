@@ -11,17 +11,17 @@ fi
 
 # run Double Commander
 if [ -z "$(pidof doublecmd)" ]; then
-    sudo -u ${_USER} doublecmd > /dev/null 2>&1 &
+    nohup sudo -u ${_USER} doublecmd > /dev/null 2>&1 &
 fi
 
 # run Kate
 if [ -z "$(pidof kate)" ]; then
-    sudo -u ${_USER} kate > /dev/null 2>&1 &
+    nohup sudo -u ${_USER} kate > /dev/null 2>&1 &
 fi
 
 # run Visual Studio Code
 if [ -z "$(pidof code)" ]; then
-    sudo -u ${_USER} code > /dev/null 2>&1 &
+    nohup sudo -u ${_USER} code > /dev/null 2>&1 &
 fi
 
 
