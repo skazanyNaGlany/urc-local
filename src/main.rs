@@ -3,27 +3,35 @@ extern crate single_instance;
 mod cmd_args;
 mod consts;
 mod errors;
-mod utils;
 
-use crate::consts::SINGLE_INSTANCE_NAME;
+use crate::consts::{
+    CARGO_PKG_NAME, DAEMON_ERR_FILENAME, DAEMON_OUT_FILENAME, DAEMON_PID_FILENAME,
+    SINGLE_INSTANCE_NAME,
+};
 use crate::errors::{
-    ErrAlreadyInstalled, ErrAlreadyRunning, ErrCurrentlyUninstalled, ErrNoExePathname,
+    ErrAlreadyInstalled, ErrAlreadyRunning, ErrCurrentlyUninstalled, ErrDaemonize, ErrNoExePathname,
 };
 use anyhow::Result;
 use auto_launch::AutoLaunch;
 use clap::Parser;
 use cmd_args::CmdArgs;
-use consts::CARGO_PKG_NAME;
+use daemonize::Daemonize;
 use realpath_ext::{RealpathFlags, realpath};
 use single_instance::SingleInstance;
-use std::env::{current_dir, current_exe, set_current_dir};
-use std::path::PathBuf;
+use std::env::{current_dir, current_exe, set_current_dir, temp_dir};
+use std::fs::File;
+use std::path::{Path, PathBuf};
 use std::process::Command;
+
+#[cfg(any(target_os = "windows"))]
+use crate::errors::ErrCannotDaemonize;
 
 fn main() -> Result<()> {
     let mut cmd_args = CmdArgs::parse();
 
     assert_single_instance(&cmd_args)?;
+    daemonize_me(&cmd_args)?;
+
     set_working_dir_as_exe(&cmd_args)?;
     resolve_paths(&mut cmd_args)?;
 
@@ -38,6 +46,45 @@ fn main() -> Result<()> {
     }
 
     return Ok(());
+}
+
+#[cfg(any(target_os = "linux", target_os = "macos"))]
+fn daemonize_me(cmd_args: &CmdArgs) -> Result<()> {
+    if !cmd_args.daemonize {
+        return Ok(());
+    }
+
+    let stdout_pathname = Path::new(temp_dir().as_os_str()).join(DAEMON_OUT_FILENAME);
+    let stderr_pathname = Path::new(temp_dir().as_os_str()).join(DAEMON_ERR_FILENAME);
+    let pid_pathname = Path::new(temp_dir().as_os_str()).join(DAEMON_PID_FILENAME);
+
+    let stdout_file = File::create(stdout_pathname)?;
+    let stderr_file = File::create(stderr_pathname)?;
+
+    let daemonize = Daemonize::new()
+        .pid_file(pid_pathname)
+        .chown_pid_file(true)
+        .stdout(stdout_file)
+        .stderr(stderr_file);
+
+    match daemonize.start() {
+        Ok(_) => {
+            // daemonized
+            return Ok(());
+        }
+        Err(e) => {
+            return Err(ErrDaemonize(e).into());
+        }
+    }
+}
+
+#[cfg(any(target_os = "windows"))]
+fn daemonize_me(cmd_args: &CmdArgs) -> Result<()> {
+    if !cmd_args.daemonize {
+        return Ok(());
+    }
+
+    return Err(ErrCannotDaemonize.into());
 }
 
 fn assert_single_instance(cmd_args: &CmdArgs) -> Result<()> {

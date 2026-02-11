@@ -5,17 +5,15 @@
 
 # run Double Commander if not running
 if [ -z "$(pidof doublecmd)" ]; then
-    doublecmd > /dev/null 2>&1 &
+    doublecmd&
 fi
 
 # run Sublime Text if not running
-if [ -z "$(pidof subl)" ]; then
-    subl > /dev/null 2>&1 &
+if [ -z "$(pidof kate)" ]; then
+    kate&
 fi
 
 # run Visual Studio Code if not running
 if [ -z "$(pidof code)" ]; then
-    code > /dev/null 2>&1 &
+    code&
 fi
-
-

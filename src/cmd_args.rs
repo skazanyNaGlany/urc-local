@@ -28,14 +28,17 @@ pub(crate) struct CmdArgs {
     #[arg(
         short = 'o',
         long,
-        help = "Allow only one app instance (is not used when the application is installed in the startup)"
+        help = "Allow only one app instance (is not used when the application is installed in the startup; useless with --daemonize)"
     )]
     pub(crate) single_instance: bool,
 
     #[arg(
         short,
         long,
-        help = "do not output any messages, except errors (RC file can still output some messages, is not used when the application is installed in the startup)"
+        help = "Do not output any messages, except errors (RC file can still output some messages, is not used when the application is installed in the startup)"
     )]
     pub(crate) quiet: bool,
+
+    #[arg(short, long, help = "Daemonize the app (only on *nix)")]
+    pub(crate) daemonize: bool,
 }

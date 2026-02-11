@@ -20,3 +20,7 @@ pub(crate) const SINGLE_INSTANCE_NAME: &str = formatcp!(
     name = CARGO_PKG_NAME,
     version = CARGO_PKG_VERSION
 );
+
+pub(crate) const DAEMON_OUT_FILENAME: &str = formatcp!("{name}.out", name = SINGLE_INSTANCE_NAME);
+pub(crate) const DAEMON_ERR_FILENAME: &str = formatcp!("{name}.err", name = SINGLE_INSTANCE_NAME);
+pub(crate) const DAEMON_PID_FILENAME: &str = formatcp!("{name}.pid", name = SINGLE_INSTANCE_NAME);
